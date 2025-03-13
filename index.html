@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Подсчёт выпускников</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .hidden { display: none; }
+    .button {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .interval-container {
+      display: inline-block;
+      text-align: center;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Подсчёт выпускников по периодам</h1>
+  
+  <!-- Секция выбора интервалов -->
+  <div id="intervals">
+    <!-- Кнопки с интервалами создаются с помощью JavaScript -->
+  </div>
+  
+  <!-- Секция счетчика -->
+  <div id="counterSection" class="hidden">
+    <h2 id="intervalTitle"></h2>
+    <p>Количество выпускников: <span id="counter">0</span></p>
+    <button class="button" id="increment">+</button>
+    <button class="button" id="decrement">-</button>
+    <button class="button" id="back">Назад</button>
+  </div>
+  
+  <script>
+    // Массив с интервалами выпускных годов
+    const intervals = [
+      '1960-1964',
+      '1965-1969',
+      '1970-1974',
+      '1975-1979',
+      '1980-1984',
+      '1985-1989',
+      '1990-1994',
+      '1995-1999',
+      '2000-2004',
+      '2005-2009',
+      '2010-2014',
+      '2015-2019'
+    ];
+    
+    // Объект для хранения количества выпускников для каждого интервала
+    const counts = {};
+    
+    // Получаем элементы страницы
+    const intervalsDiv = document.getElementById('intervals');
+    const counterSection = document.getElementById('counterSection');
+    const intervalTitle = document.getElementById('intervalTitle');
+    const counterDisplay = document.getElementById('counter');
+    const incrementBtn = document.getElementById('increment');
+    const decrementBtn = document.getElementById('decrement');
+    const backBtn = document.getElementById('back');
+    
+    // Переменная для хранения текущего выбранного интервала
+    let currentInterval = null;
+    
+    // Функция обновления отображения количества под кнопкой для интервала
+    function updateIntervalDisplay(interval, container) {
+      const countDisplay = container.querySelector('.count-display');
+      countDisplay.textContent = 'Всего: ' + counts[interval];
+    }
+    
+    // Создаем кнопки и контейнеры для каждого интервала
+    intervals.forEach(interval => {
+      // Инициализируем счетчик для интервала
+      counts[interval] = 0;
+      
+      // Создаем контейнер для кнопки и текста
+      const container = document.createElement('div');
+      container.className = 'interval-container';
+      
+      // Кнопка для выбора интервала
+      const btn = document.createElement('button');
+      btn.textContent = interval;
+      btn.className = 'button';
+      btn.addEventListener('click', () => {
+        currentInterval = interval;
+        // Переход к секции счетчика
+        intervalsDiv.classList.add('hidden');
+        counterSection.classList.remove('hidden');
+        intervalTitle.textContent = 'Период ' + interval;
+        counterDisplay.textContent = counts[interval];
+      });
+      
+      // Элемент для отображения общего количества
+      const countDisplay = document.createElement('p');
+      countDisplay.className = 'count-display';
+      countDisplay.textContent = 'Всего: ' + counts[interval];
+      
+      container.appendChild(btn);
+      container.appendChild(countDisplay);
+      intervalsDiv.appendChild(container);
+    });
+    
+    // Обработчик увеличения счетчика
+    incrementBtn.addEventListener('click', () => {
+      counts[currentInterval]++;
+      counterDisplay.textContent = counts[currentInterval];
+    });
+    
+    // Обработчик уменьшения счетчика с проверкой на отрицательное значение
+    decrementBtn.addEventListener('click', () => {
+      if (counts[currentInterval] > 0) {
+        counts[currentInterval]--;
+        counterDisplay.textContent = counts[currentInterval];
+      }
+    });
+    
+    // Обработчик кнопки "Назад" для возврата к выбору интервалов
+    backBtn.addEventListener('click', () => {
+      // Обновляем отображение для выбранного интервала
+      const containers = intervalsDiv.getElementsByClassName('interval-container');
+      for (let container of containers) {
+        const btn = container.querySelector('button');
+        if (btn.textContent === currentInterval) {
+          updateIntervalDisplay(currentInterval, container);
+          break;
+        }
+      }
+      currentInterval = null;
+      counterSection.classList.add('hidden');
+      intervalsDiv.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
